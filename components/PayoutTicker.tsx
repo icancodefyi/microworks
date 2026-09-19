@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useWatchContractEvent, useAccount } from "wagmi";
 import { formatUnits } from "viem";
 import { CONTRACT_ABI } from "@/lib/abi";
 import { CONTRACT_ADDRESS, EXPLORER } from "@/lib/constants";
+import { IconExternalLink, IconFlame } from "@tabler/icons-react";
 
 type FeedEvent = {
   key: string;
@@ -18,11 +19,12 @@ type FeedEvent = {
   ts: number;
 };
 
-const MAX_ITEMS = 24;
+const MAX_ITEMS = 30;
 
 export default function PayoutTicker() {
   const { address } = useAccount();
   const [feed, setFeed] = useState<FeedEvent[]>([]);
+  const [filterMode, setFilterMode] = useState<"all" | "mine" | "accepted">("all");
   const me = address?.toLowerCase();
 
   const push = useRef((e: Omit<FeedEvent, "key" | "ts" | "me" | "shortWorker"> & { worker?: string }) => {
@@ -98,90 +100,147 @@ export default function PayoutTicker() {
       ),
   });
 
-  // prune stale entries periodically (keep the feed alive, not frozen)
+  // Periodically prune older entries so feed stays lively
   useEffect(() => {
-    const t = setInterval(
-      () =>
-        setFeed((prev) =>
-          prev.filter((e) => Date.now() - e.ts < 30_000),
-        ),
-      10_000,
-    );
+    const t = setInterval(() => {
+      setFeed((prev) => prev.filter((e) => Date.now() - e.ts < 60_000));
+    }, 10_000);
     return () => clearInterval(t);
   }, []);
 
+  const filteredFeed = useMemo(() => {
+    if (filterMode === "mine") return feed.filter((e) => e.me);
+    if (filterMode === "accepted") return feed.filter((e) => e.kind === "accepted");
+    return feed;
+  }, [feed, filterMode]);
+
   return (
-    <div className="overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-black/10 bg-zinc-50 px-4 py-2.5">
-        <p className="text-sm font-semibold tracking-tight">
-          Live micro-win feed
-        </p>
-        <span className="flex items-center gap-1.5 text-xs text-zinc-500">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-          on-chain
-        </span>
+    <div className="rounded-xl border border-stone-200 bg-white shadow-xs overflow-hidden">
+      {/* Header */}
+      <div className="border-b border-stone-200 bg-stone-50/80 px-4 py-3 flex items-center justify-between">
+        <div>
+          <h3 className="font-sans font-bold text-sm text-stone-900 leading-tight">
+            Live Settlement Stream
+          </h3>
+          <p className="text-[11px] font-mono text-stone-500 mt-0.5">
+            Real-time Monad state transitions
+          </p>
+        </div>
+
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+          <span className="size-1.5 rounded-full bg-emerald-500 animate-ping" />
+          <span>1.2s Finality</span>
+        </div>
       </div>
-      <div className="max-h-[420px] overflow-y-auto">
-        {feed.length === 0 ? (
-          <div className="px-4 py-10 text-center text-sm text-zinc-400">
-            Waiting for on-chain action…
-            <br />
-            <span className="text-xs">
-              Create a task and complete it to see micro-wins stream in.
-            </span>
+
+      {/* Filter Tabs */}
+      <div className="grid grid-cols-3 border-b border-stone-200 bg-stone-100/50 text-[11px] font-mono">
+        <button
+          type="button"
+          onClick={() => setFilterMode("all")}
+          className={`py-1.5 text-center cursor-pointer transition-colors border-r border-stone-200 ${
+            filterMode === "all"
+              ? "bg-white font-bold text-stone-900 border-b-2 border-b-[#2977ff]"
+              : "text-stone-500 hover:text-stone-800"
+          }`}
+        >
+          All Events
+        </button>
+        <button
+          type="button"
+          onClick={() => setFilterMode("accepted")}
+          className={`py-1.5 text-center cursor-pointer transition-colors border-r border-stone-200 ${
+            filterMode === "accepted"
+              ? "bg-white font-bold text-stone-900 border-b-2 border-b-[#2977ff]"
+              : "text-stone-500 hover:text-stone-800"
+          }`}
+        >
+          Payouts
+        </button>
+        <button
+          type="button"
+          onClick={() => setFilterMode("mine")}
+          className={`py-1.5 text-center cursor-pointer transition-colors ${
+            filterMode === "mine"
+              ? "bg-white font-bold text-stone-900 border-b-2 border-b-[#2977ff]"
+              : "text-stone-500 hover:text-stone-800"
+          }`}
+        >
+          My Actions
+        </button>
+      </div>
+
+      {/* Feed List */}
+      <div className="max-h-[440px] overflow-y-auto divide-y divide-stone-100">
+        {filteredFeed.length === 0 ? (
+          <div className="p-8 text-center text-xs font-mono text-stone-400">
+            <div className="size-8 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-400 mx-auto mb-2">
+              <IconFlame size={16} />
+            </div>
+            <span>Waiting for on-chain events...</span>
+            <p className="mt-1 text-[11px] text-stone-500">
+              Submit a micro-task answer to watch instant Monad settlement.
+            </p>
           </div>
         ) : (
-          feed.map((e) => {
+          filteredFeed.map((e) => {
             const accepted = e.kind === "accepted";
             const rejected = e.kind === "rejected";
             const task = e.kind === "task";
             const amount =
-              e.amount !== undefined
-                ? Number(formatUnits(e.amount, 18)).toFixed(4)
-                : "0";
+              e.amount !== undefined ? Number(formatUnits(e.amount, 18)).toFixed(4) : "0";
 
             return (
               <div
                 key={e.key}
-                className={`animate-in flex items-start gap-3 border-b border-black/5 px-4 py-2.5 text-xs ${
-                  e.me ? "bg-violet-50" : ""
+                className={`flex items-start gap-2.5 px-3.5 py-2.5 text-xs transition-colors ${
+                  e.me ? "bg-blue-50/50" : "hover:bg-stone-50/60"
                 }`}
               >
+                {/* Status indicator icon */}
                 <span
-                  className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                  className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-mono font-bold ${
                     accepted
-                      ? "bg-emerald-100 text-emerald-700"
+                      ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
                       : rejected
-                        ? "bg-red-100 text-red-600"
-                        : task
-                          ? "bg-violet-100 text-violet-700"
-                          : "bg-amber-100 text-amber-700"
+                      ? "bg-rose-100 text-rose-800 border border-rose-200"
+                      : task
+                      ? "bg-blue-100 text-blue-800 border border-blue-200"
+                      : "bg-amber-100 text-amber-800 border border-amber-200"
                   }`}
                 >
-                  {accepted ? "✓" : rejected ? "✗" : task ? "+" : "…"}
+                  {accepted ? "✓" : rejected ? "✕" : task ? "+" : "…"}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium">
-                    {task
-                      ? `New task #${e.taskId} created`
-                      : `frame #${e.frameId} · task #${e.taskId}`}
-                  </p>
+
+                {/* Details */}
+                <div className="min-w-0 flex-1 font-mono">
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="font-semibold text-stone-800 truncate text-[11px]">
+                      {task ? `Task #${e.taskId} Deployed` : `Task #${e.taskId} · Frame #${e.frameId}`}
+                    </p>
+                    {accepted && (
+                      <span className="font-bold text-emerald-700 text-xs shrink-0">
+                        +{amount} MON
+                      </span>
+                    )}
+                  </div>
+
                   <p
-                    className={`truncate ${
+                    className={`truncate text-[11px] mt-0.5 ${
                       accepted
-                        ? "text-emerald-600"
+                        ? "text-stone-600"
                         : rejected
-                          ? "text-red-500"
-                          : "text-zinc-400"
+                        ? "text-rose-600"
+                        : "text-stone-400"
                     }`}
                   >
                     {task
-                      ? "jump in and complete it"
+                      ? "Escrow funded on Monad"
                       : accepted
-                        ? `+${amount} MON paid to ${e.shortWorker}${e.me ? " (you!)" : ""}`
-                        : rejected
-                          ? `rejected — no payout · ${e.shortWorker}`
-                          : `awaiting consensus · ${e.shortWorker}`}
+                      ? `Paid to ${e.shortWorker}${e.me ? " (you!)" : ""}`
+                      : rejected
+                      ? `Failed consensus · ${e.shortWorker}`
+                      : `Awaiting quorum · ${e.shortWorker}`}
                   </p>
                 </div>
               </div>
@@ -189,13 +248,16 @@ export default function PayoutTicker() {
           })
         )}
       </div>
+
+      {/* Explorer Footer */}
       <a
         href={EXPLORER}
         target="_blank"
         rel="noreferrer"
-        className="block border-t border-black/10 bg-zinc-50 px-4 py-2 text-center text-xs font-medium text-violet-600 hover:bg-zinc-100"
+        className="flex items-center justify-center gap-1.5 border-t border-stone-200 bg-stone-50 px-4 py-2.5 text-xs font-mono font-semibold text-stone-700 hover:text-stone-950 hover:bg-stone-100 transition-colors"
       >
-        Open in Monad explorer
+        <span>View on Monad Explorer</span>
+        <IconExternalLink size={13} />
       </a>
     </div>
   );
