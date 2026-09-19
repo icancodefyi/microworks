@@ -1,5 +1,5 @@
 import { defineChain, http } from "viem";
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { createConfig, injected } from "wagmi";
 
 export const monadTestnet = defineChain({
   id: 10_143,
@@ -30,18 +30,14 @@ export const monadMainnet = defineChain({
   testnet: false,
 });
 
-const WALLETCONNECT_PROJECT_ID =
-  process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ??
-  "demo-placeholder-project-id";
-
 export function getConfig() {
-  return getDefaultConfig({
-    appName: "Microworks",
-    projectId: WALLETCONNECT_PROJECT_ID,
+  return createConfig({
     chains: [monadTestnet, monadMainnet],
     transports: {
       [monadTestnet.id]: http(),
       [monadMainnet.id]: http(),
     },
+    connectors: [injected()],
+    ssr: true,
   });
 }

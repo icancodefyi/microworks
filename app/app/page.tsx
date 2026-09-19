@@ -2,11 +2,21 @@
 
 import { useState } from "react";
 import Header from "@/components/Header";
+import PlayerHQ from "@/components/PlayerHQ";
 import TaskList from "@/components/TaskList";
 import CreateTask from "@/components/CreateTask";
 import DoTask from "@/components/DoTask";
 import PayoutTicker from "@/components/PayoutTicker";
+import Leaderboard from "@/components/Leaderboard";
 import { CONTRACT_ADDRESS, EXPLORER, type MicroTask } from "@/lib/constants";
+import {
+  IconSparkles,
+  IconExternalLink,
+  IconDeviceGamepad2,
+  IconUserCheck,
+  IconTrophy,
+  IconPlus,
+} from "@tabler/icons-react";
 
 export default function AppPage() {
   const [createOpen, setCreateOpen] = useState(false);
@@ -16,111 +26,107 @@ export default function AppPage() {
     <div className="flex min-h-screen flex-1 flex-col bg-stone-50 text-stone-900 antialiased selection:bg-stone-900 selection:text-white">
       <Header />
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 space-y-6">
-        {/* Editorial Top Workspace Section */}
-        <section className="overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-3.5 pt-4 pb-28 sm:px-6 sm:py-6 sm:pb-8 space-y-5">
+        {/* Arcade Top Workspace Marquee */}
+        <section className="card-arcade overflow-hidden">
           {/* Window Chrome Bar */}
-          <div className="flex items-center justify-between border-b border-stone-200/80 bg-stone-50/80 px-4 py-2.5">
+          <div className="flex items-center justify-between border-b border-stone-200/80 bg-stone-100/70 px-4 py-2.5">
             <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-stone-300" />
-              <span className="h-2.5 w-2.5 rounded-full bg-stone-300" />
-              <span className="h-2.5 w-2.5 rounded-full bg-stone-300" />
-              <span className="ml-2 font-mono text-[11px] font-medium text-stone-500">
-                microworks://terminal.monad-testnet
+              <span className="flex h-5 w-5 items-center justify-center rounded-md bg-[#2977ff] text-white font-black text-[10px]">
+                ⚡
+              </span>
+              <span className="ml-1 font-mono text-[11px] font-bold text-stone-700 uppercase tracking-wider">
+                MONAD ARCADE · v2.0
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-medium text-emerald-700">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-800">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                1.2s Finality
+                1.2s Finality · 10,000 TPS
               </span>
             </div>
           </div>
 
           {/* Hero Content & Action Bar */}
-          <div className="p-6 sm:p-8">
+          <div className="p-5 sm:p-7 bg-gradient-to-b from-white to-stone-50/40">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div className="max-w-2xl space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center rounded-md border border-stone-200 bg-stone-100 px-2 py-0.5 font-mono text-[11px] font-medium uppercase tracking-wider text-stone-600">
-                    Live Bounties
+                  <span className="inline-flex items-center rounded-md border border-[#2977ff]/30 bg-[#2977ff]/10 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-[#2977ff]">
+                    ACTIVE BOUNTY VAULTS
                   </span>
-                  <span className="text-xs font-mono text-stone-400">
-                    Monad Parallel EVM
+                  <span className="text-xs font-mono text-stone-400 font-semibold">
+                    100 XP / Frame · Instant Payouts
                   </span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-stone-900">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-stone-900">
                   Micro-tasks. Instant payouts. <em>On-chain.</em>
                 </h1>
-                <p className="text-sm text-stone-500 leading-relaxed max-w-xl">
-                  Knock out micro-tasks in seconds — label, verify, or transcribe frames. When your answer matches the on-chain golden key, your reward is settled in ~1.2 seconds.
+                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-xl font-sans">
+                  Knock out micro-tasks in seconds — label, verify, or rate frames. When your answer matches the on-chain golden key, your reward is credited instantly to your wallet.
                 </p>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => setCreateOpen(true)}
-                  className="cursor-pointer box-border inline-flex items-center justify-center font-semibold font-sans uppercase border transition-all ease-in duration-75 whitespace-nowrap text-center select-none gap-x-2 text-xs leading-5 rounded-xl px-4 py-2 text-white bg-gradient-to-b from-stone-800 to-stone-950 border-stone-700/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_2px_6px_rgba(0,0,0,0.2)] hover:from-stone-700 hover:to-stone-900 active:scale-95"
+                  className="btn-arcade-dark inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-xs font-black uppercase tracking-wider"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Deploy Micro-Task
+                  <IconSparkles size={15} />
+                  <span>Deploy Micro-Task</span>
                 </button>
 
                 <a
                   href={`${EXPLORER}/address/${CONTRACT_ADDRESS}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="cursor-pointer box-border inline-flex items-center justify-center font-semibold font-sans uppercase border transition-all ease-in duration-75 whitespace-nowrap text-center select-none gap-x-1.5 text-xs leading-5 rounded-xl px-4 py-2 bg-gradient-to-b from-white to-stone-100 text-stone-800 border-stone-300 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_3px_rgba(0,0,0,0.06)] hover:bg-stone-50 active:scale-95"
+                  className="btn-arcade-white inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-3 text-xs font-bold font-sans uppercase text-stone-800"
                 >
-                  Contract
-                  <svg className="w-3 h-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
+                  <span>Contract</span>
+                  <IconExternalLink size={13} className="text-stone-400" />
                 </a>
               </div>
             </div>
 
             {/* Editorial Metrics Strip */}
-            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-stone-200/80 pt-6">
-              <div className="space-y-1">
-                <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-stone-600">
+            <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-stone-200/80 pt-5">
+              <div className="rounded-xl border border-stone-200 bg-white p-3 space-y-1 shadow-2xs">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-400">
                   Block Finality
                 </span>
-                <p className="font-mono text-lg font-bold text-stone-900 flex items-center gap-1.5">
+                <p className="font-mono text-base sm:text-lg font-black text-stone-900 flex items-center gap-1.5">
                   1.2s
-                  <span className="text-[10px] font-normal text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">
                     parallel
                   </span>
                 </p>
               </div>
 
-              <div className="space-y-1">
-                <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-stone-600">
+              <div className="rounded-xl border border-stone-200 bg-white p-3 space-y-1 shadow-2xs">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-400">
                   Throughput
                 </span>
-                <p className="font-mono text-lg font-bold text-stone-900">
+                <p className="font-mono text-base sm:text-lg font-black text-stone-900">
                   10,000 TPS
                 </p>
               </div>
 
-              <div className="space-y-1">
-                <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-stone-600">
+              <div className="rounded-xl border border-stone-200 bg-white p-3 space-y-1 shadow-2xs">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-400">
                   Protocol Fee
                 </span>
-                <p className="font-mono text-lg font-bold text-stone-900">
+                <p className="font-mono text-base sm:text-lg font-black text-stone-900">
                   2.0%
                 </p>
               </div>
 
-              <div className="space-y-1">
-                <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-stone-600">
+              <div className="rounded-xl border border-stone-200 bg-white p-3 space-y-1 shadow-2xs">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-400">
                   Verification
                 </span>
-                <p className="font-mono text-lg font-bold text-stone-900">
+                <p className="font-mono text-base sm:text-lg font-black text-stone-900">
                   Golden Key
                 </p>
               </div>
@@ -128,10 +134,19 @@ export default function AppPage() {
           </div>
         </section>
 
+        {/* Player HQ Profile / Standby Card */}
+        <PlayerHQ
+          onDeployClick={() => setCreateOpen(true)}
+          onQuickPlay={() => {
+            document.getElementById("tasks")?.scrollIntoView({ behavior: "smooth" });
+          }}
+        />
+
         {/* Task Grid & Live Feed Layout */}
         <div className="grid gap-6 lg:grid-cols-[1fr_380px] items-start">
-          <section id="tasks" className="min-w-0">
+          <section id="tasks" className="min-w-0 space-y-6">
             <TaskList onDoTask={setActiveTask} creating={false} />
+            <Leaderboard />
           </section>
           <aside className="lg:sticky lg:top-20 lg:self-start">
             <PayoutTicker />
@@ -167,6 +182,65 @@ export default function AppPage() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Sticky Bottom Arcade Dock (Subway Surfers Thumb Controls) */}
+      <nav className="fixed bottom-0 inset-x-0 z-40 sm:hidden border-t-2 border-stone-300/90 bg-white/95 backdrop-blur-md px-3 py-2 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center justify-around">
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById("tasks")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="flex flex-col items-center gap-0.5 text-stone-600 active:text-[#2977ff] active:scale-95 transition"
+          >
+            <IconDeviceGamepad2 size={20} />
+            <span className="font-mono text-[10px] font-black uppercase tracking-wider">Quests</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById("player-hq")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="flex flex-col items-center gap-0.5 text-stone-600 active:text-[#2977ff] active:scale-95 transition"
+          >
+            <IconUserCheck size={20} />
+            <span className="font-mono text-[10px] font-black uppercase tracking-wider">My HQ</span>
+          </button>
+
+          {/* Big Elevated Floating Quick Run Thumb Button */}
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById("tasks")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="btn-arcade-green -mt-6 flex h-13 w-13 items-center justify-center rounded-2xl shadow-lg active:translate-y-1 transition text-white"
+            title="Quick Play Run"
+          >
+            <span className="text-xl">▶</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById("leaderboard")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="flex flex-col items-center gap-0.5 text-stone-600 active:text-[#2977ff] active:scale-95 transition"
+          >
+            <IconTrophy size={20} />
+            <span className="font-mono text-[10px] font-black uppercase tracking-wider">Top Run</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            className="flex flex-col items-center gap-0.5 text-stone-600 active:text-[#2977ff] active:scale-95 transition"
+          >
+            <IconPlus size={20} />
+            <span className="font-mono text-[10px] font-black uppercase tracking-wider">Deploy</span>
+          </button>
+        </div>
+      </nav>
 
       {/* Interactive Modals */}
       <CreateTask open={createOpen} onClose={() => setCreateOpen(false)} />

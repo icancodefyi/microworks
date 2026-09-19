@@ -75,8 +75,8 @@ async function main() {
 
   const constants = readFileSync(CONSTANTS_PATH, "utf8");
   const updated = constants.replace(
-    /("0x0000000000000000000000000000000000000000" as `0x\$\{string\}`)/,
-    () => `"${address}" as \`0x${string}\``,
+    /(CONTRACT_ADDRESS\s*=\s*\n?\s*")0x[0-9a-fA-F]{40}(")/,
+    (_match, before, after) => before + address + after,
   );
   if (updated === constants) {
     console.warn("\nCould not auto-update lib/constants.ts (address line changed). Update manually.");

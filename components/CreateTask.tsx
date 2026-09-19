@@ -4,7 +4,24 @@ import { useState } from "react";
 import { parseEther } from "viem";
 import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { CONTRACT_ABI } from "@/lib/abi";
-import { CATEGORIES, CONTRACT_ADDRESS, OPTION_LABELS } from "@/lib/constants";
+import {
+  CATEGORIES,
+  CONTRACT_ADDRESS,
+  OPTION_LABELS,
+  KIND_OPTIONS,
+  KIND_YESNO,
+  KIND_RATING,
+  KIND_TEXT,
+  KIND_LABELS,
+} from "@/lib/constants";
+import { optionAnswerHash, textAnswerHash } from "@/lib/answers";
+
+const KIND_HINTS: Record<number, string> = {
+  [KIND_OPTIONS]: "Worker picks one of your options per frame.",
+  [KIND_YESNO]: "Worker answers Yes or No per frame.",
+  [KIND_RATING]: "Worker rates each frame 1–5.",
+  [KIND_TEXT]: "Worker types a short free-text answer.",
+};
 
 export default function CreateTask({
   open,
@@ -18,6 +35,8 @@ export default function CreateTask({
     "Label each frame as Person, Vehicle or Empty. Correct = instant payout.",
   );
   const [category, setCategory] = useState<string>("label");
+  const [kind, setKind] = useState<number>(KIND_OPTIONS);
+  const [optionLabels, setOptionLabels] = useState(OPTION_LABELS.join(", "));
   const [reward, setReward] = useState("0.05");
   const [frameCount, setFrameCount] = useState(30);
   const [answers, setAnswers] = useState("");
@@ -28,61 +47,118 @@ export default function CreateTask({
 
   if (!open) return null;
 
+  const optionsArr = optionLabels
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   const autoGenerate = () => {
-    const golden = new Map<number, number>();
+    const lines: string[] = [];
     for (let i = 0; i < frameCount; i++) {
-      golden.set(i, Math.floor(Math.random() * OPTION_LABELS.length));
+      if (kind === KIND_TEXT) {
+        const pool = ["clear", "blocked", "vehicle", "pedestrian"];
+        lines.push(`${i}:${pool[i % pool.length]}`);
+      } else if (kind === KIND_YESNO) {
+        lines.push(`${i}:${Math.random() < 0.5 ? "yes" : "no"}`);
+      } else if (kind === KIND_RATING) {
+        lines.push(`${i}:${1 + Math.floor(Math.random() * 5)}`);
+      } else {
+        lines.push(`${i}:${Math.floor(Math.random() * Math.max(2, optionsArr.length))}`);
+      }
     }
-    setAnswers(
-      Array.from(golden.entries())
-        .map(([f, o]) => `${f}:${o}`)
-        .join("\n"),
-    );
+    setAnswers(lines.join("\n"));
   };
 
-  const parseAnswers = (): { rer: Map<number, number>; ok: boolean; msg: string } => {
-    const golden = new Map<number, number>();
-    if (!answers.trim()) {
-      return { rer: golden, ok: false, msg: "Please generate or enter the correct answer key." };
+  const parseAnswerValue = (v: string): { ok: boolean; msg: string } => {
+    const val = v.trim().toLowerCase();
+    if (kind === KIND_TEXT) {
+      if (!val) return { ok: false, msg: "Empty answer" };
+      return { ok: true, msg: "" };
     }
-    for (const line of answers.split(/[\n,]/)) {
-      const trimmed = line.trim();
-      if (!trimmed) continue;
-      const match = trimmed.match(/^(\d+)\s*[:=]\s*(\d+)$/);
-      if (!match) return { rer: golden, ok: false, msg: `Bad line: "${line}" — format as frameIdx:option` };
-      const f = Number(match[1]);
-      const o = Number(match[2]);
-      if (f >= frameCount) return { rer: golden, ok: false, msg: `Frame ${f} out of range (0..${frameCount - 1})` };
-      if (o >= OPTION_LABELS.length) return { rer: golden, ok: false, msg: `Option ${o} is invalid` };
-      golden.set(f, o);
+    if (kind === KIND_YESNO) {
+      if (val === "yes" || val === "no" || val === "0" || val === "1") return { ok: true, msg: "" };
+      return { ok: false, msg: `"${v}" must be yes/no` };
     }
-    if (golden.size === 0) return { rer: golden, ok: false, msg: "Answer key is empty." };
-    return { rer: golden, ok: true, msg: "" };
+    if (kind === KIND_RATING) {
+      const n = Number(val);
+      if (n >= 1 && n <= 5) return { ok: true, msg: "" };
+      return { ok: false, msg: `"${v}" must be 1-5` };
+    }
+    const n = Number(val);
+    if (Number.isInteger(n) && n >= 0 && n < optionsArr.length) return { ok: true, msg: "" };
+    return { ok: false, msg: `"${v}" must be 0..${Math.max(0, optionsArr.length - 1)}` };
+  };
+
+  const buildGolden = (): { ok: boolean; msg: string; answers: `0x${string}`[] } => {
+    const map = new Map<number, string>();
+    if (answers.trim()) {
+      for (const line of answers.split(/[\n,]/)) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        const match = trimmed.match(/^(\d+)\s*[:=]\s*(.+)$/);
+        if (!match) return { ok: false, msg: `Bad line: "${line}" — format as frame:answer`, answers: [] };
+        const f = Number(match[1]);
+        if (f >= frameCount) return { ok: false, msg: `Frame ${f} out of range (0..${frameCount - 1})`, answers: [] };
+        const check = parseAnswerValue(match[2]);
+        if (!check.ok) return { ok: false, msg: `Frame ${f}: ${check.msg}`, answers: [] };
+        map.set(f, match[2].trim().toLowerCase());
+      }
+    }
+    const golden: `0x${string}`[] = [];
+    for (let f = 0; f < frameCount; f++) {
+      let raw = map.get(f);
+      if (raw === undefined) {
+        // auto-fill missing frames so the key always covers every frame
+        if (kind === KIND_TEXT) raw = "clear";
+        else if (kind === KIND_YESNO) raw = Math.random() < 0.5 ? "yes" : "no";
+        else if (kind === KIND_RATING) raw = `${1 + Math.floor(Math.random() * 5)}`;
+        else raw = String(Math.floor(Math.random() * Math.max(2, optionsArr.length)));
+      }
+      golden.push(
+        kind === KIND_TEXT
+          ? textAnswerHash(raw)
+          : kind === KIND_YESNO
+            ? optionAnswerHash(raw === "yes" ? 0 : raw === "no" ? 1 : Number(raw))
+            : kind === KIND_RATING
+              ? optionAnswerHash(Number(raw) - 1)
+              : optionAnswerHash(Number(raw)),
+      );
+    }
+    return { ok: true, msg: "", answers: golden };
   };
 
   const submit = () => {
     setError("");
     try {
-      const parsed = parseAnswers();
-      if (!parsed.ok) {
-        setError(parsed.msg);
-        return;
-      }
       const rewardWei = parseEther(reward);
       if (rewardWei <= 0n) {
         setError("Reward must be greater than 0 MON.");
         return;
       }
-      const indices = Array.from(parsed.rer.keys()).map(BigInt);
-      const options = Array.from(parsed.rer.values());
-      const goldenCount = BigInt(indices.length);
-      const value = rewardWei * goldenCount;
+      const golden = buildGolden();
+      if (!golden.ok) {
+        setError(golden.msg);
+        return;
+      }
+      const escrow = rewardWei * BigInt(frameCount);
+      const optionCount = kind === KIND_OPTIONS ? optionsArr.length : kind === KIND_YESNO ? 2 : kind === KIND_RATING ? 5 : 0;
+      const options = kind === KIND_OPTIONS ? optionsArr : [];
       writeContract({
         address: CONTRACT_ADDRESS,
         abi: CONTRACT_ABI,
         functionName: "createTask",
-        args: [title, description, category, rewardWei, BigInt(frameCount), indices, options],
-        value,
+        args: [
+          title,
+          description,
+          category,
+          kind,
+          optionCount,
+          options,
+          rewardWei,
+          BigInt(frameCount),
+          golden.answers,
+        ],
+        value: escrow,
       });
     } catch (e) {
       setError(e instanceof Error ? e.message : "Invalid input parameters");
@@ -92,8 +168,7 @@ export default function CreateTask({
   const totalBounty = (() => {
     try {
       const r = parseFloat(reward) || 0;
-      const lines = answers.trim() ? answers.trim().split(/[\n,]/).filter(Boolean).length : frameCount;
-      return (r * lines).toFixed(3);
+      return (r * frameCount).toFixed(3);
     } catch {
       return "0.000";
     }
@@ -134,11 +209,35 @@ export default function CreateTask({
               Deploy Micro-Task & Bounty Vault
             </h2>
             <p className="mt-1 text-xs text-stone-500">
-              Contract verifies golden frames on Monad testnet with sub-second finality.
+              Contract verifies golden answers on Monad testnet with sub-second finality. Every correct answer pays instantly.
             </p>
           </div>
 
           <div className="space-y-4 pt-1">
+            {/* Task Type */}
+            <div>
+              <label className="block text-xs font-mono font-medium uppercase tracking-wider text-stone-600">
+                Task Type
+              </label>
+              <div className="mt-1.5 grid grid-cols-2 gap-2">
+                {KIND_LABELS.map((k) => (
+                  <button
+                    key={k.value}
+                    type="button"
+                    onClick={() => setKind(k.value)}
+                    className={`rounded-xl border px-3 py-2 text-xs font-semibold transition cursor-pointer ${
+                      kind === k.value
+                        ? "border-[#2977ff] bg-[#2977ff]/10 text-[#2977ff]"
+                        : "border-stone-200 bg-stone-50/60 text-stone-600 hover:bg-stone-100"
+                    }`}
+                  >
+                    {k.label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1.5 text-[11px] text-stone-400">{KIND_HINTS[kind]}</p>
+            </div>
+
             {/* Title */}
             <div>
               <label className="block text-xs font-mono font-medium uppercase tracking-wider text-stone-600">
@@ -224,6 +323,21 @@ export default function CreateTask({
               />
             </div>
 
+            {kind === KIND_OPTIONS && (
+              <div>
+                <label className="block text-xs font-mono font-medium uppercase tracking-wider text-stone-600">
+                  Options (comma separated)
+                </label>
+                <input
+                  type="text"
+                  value={optionLabels}
+                  onChange={(e) => setOptionLabels(e.target.value)}
+                  className="mt-1.5 w-full rounded-xl border border-stone-200 bg-stone-50/60 px-3.5 py-2.5 text-sm text-stone-900 focus:bg-white focus:border-[#2977ff] focus:ring-2 focus:ring-[#2977ff]/15 outline-none transition"
+                  placeholder="Person, Vehicle, Empty"
+                />
+              </div>
+            )}
+
             {/* Answer Key Editor */}
             <div>
               <div className="flex items-center justify-between">
@@ -246,20 +360,46 @@ export default function CreateTask({
                 value={answers}
                 onChange={(e) => setAnswers(e.target.value)}
                 rows={4}
-                placeholder={"0:0\n1:2\n2:1\n…  (format: frameIndex:optionNumber)"}
+                placeholder={
+                  kind === KIND_TEXT
+                    ? "0:clear\n1:blocked\n…  (format: frameIndex:answerText)"
+                    : kind === KIND_YESNO
+                      ? "0:yes\n1:no\n…  (format: frameIndex:yes|no)"
+                      : kind === KIND_RATING
+                        ? "0:4\n1:2\n…  (format: frameIndex:1..5)"
+                        : "0:0\n1:2\n…  (format: frameIndex:optionNumber)"
+                }
                 className="mt-1.5 w-full rounded-xl border border-stone-200 bg-stone-50/60 px-3.5 py-2.5 font-mono text-xs text-stone-900 placeholder:text-stone-400 focus:bg-white focus:border-[#2977ff] focus:ring-2 focus:ring-[#2977ff]/15 outline-none transition leading-relaxed"
               />
 
               <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <span className="text-[11px] font-mono text-stone-400">Options:</span>
-                {OPTION_LABELS.map((lbl, idx) => (
-                  <span
-                    key={lbl}
-                    className="inline-flex items-center gap-1 rounded-md border border-stone-200 bg-stone-100 px-1.5 py-0.5 font-mono text-[10px] text-stone-600"
-                  >
-                    <span className="font-semibold text-stone-900">{idx}</span> = {lbl}
-                  </span>
-                ))}
+                <span className="text-[11px] font-mono text-stone-400">
+                  {kind === KIND_OPTIONS
+                    ? "Options:"
+                    : kind === KIND_YESNO
+                      ? "Accept:"
+                      : kind === KIND_RATING
+                        ? "Scale:"
+                        : "Hint:"}
+                </span>
+                {kind === KIND_OPTIONS &&
+                  optionsArr.map((lbl, idx) => (
+                    <span
+                      key={`${lbl}-${idx}`}
+                      className="inline-flex items-center gap-1 rounded-md border border-stone-200 bg-stone-100 px-1.5 py-0.5 font-mono text-[10px] text-stone-600"
+                    >
+                      <span className="font-semibold text-stone-900">{idx}</span> = {lbl}
+                    </span>
+                  ))}
+                {kind === KIND_YESNO && (
+                  <span className="text-[11px] text-stone-400">yes = 0, no = 1</span>
+                )}
+                {kind === KIND_RATING && (
+                  <span className="text-[11px] text-stone-400">1 (worst) … 5 (best)</span>
+                )}
+                {kind === KIND_TEXT && (
+                  <span className="text-[11px] text-stone-400">answers are hashed on-chain</span>
+                )}
               </div>
             </div>
 
@@ -269,9 +409,10 @@ export default function CreateTask({
                 <span className="text-stone-500 font-mono">Estimated Bounty Vault:</span>
                 <span className="font-mono font-bold text-stone-900">~{totalBounty} MON</span>
               </div>
-              <div className="mt-1.5 flex items-center justify-between text-[11px] text-stone-400">
+              <div className="mt-1.5 flex flex-wrap items-center justify-between gap-1 text-[11px] text-stone-400">
                 <span>Settlement Speed</span>
                 <span className="text-emerald-600 font-mono font-medium">1.2s parallel finality</span>
+                <span className="ml-auto text-stone-400">Workers earn +100 XP per correct answer</span>
               </div>
             </div>
 
@@ -301,7 +442,7 @@ export default function CreateTask({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-600 hover:bg-stone-100 hover:text-stone-900 transition cursor-pointer"
+            className="btn-arcade-white rounded-xl px-4 py-2 text-xs font-bold font-sans uppercase text-stone-700"
           >
             Cancel
           </button>
@@ -311,7 +452,7 @@ export default function CreateTask({
               type="button"
               onClick={submit}
               disabled={isPending || isWaiting}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-stone-800 to-stone-950 px-5 py-2.5 text-xs font-semibold text-white border border-stone-700/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_2px_4px_rgba(0,0,0,0.15)] hover:from-stone-700 hover:to-stone-900 active:scale-[0.98] transition cursor-pointer disabled:opacity-50"
+              className="btn-arcade-dark inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white disabled:opacity-50"
             >
               {isPending || isWaiting ? (
                 <>
@@ -329,7 +470,7 @@ export default function CreateTask({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl bg-[#2977ff] px-5 py-2 text-xs font-semibold text-white hover:bg-[#2065dc] transition cursor-pointer"
+              className="btn-arcade-blue rounded-xl px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white"
             >
               Close Window
             </button>

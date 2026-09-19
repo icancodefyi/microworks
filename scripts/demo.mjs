@@ -19,6 +19,7 @@ import {
   parseEther,
   formatEther,
   defineChain,
+  keccak256,
 } from "viem";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 
@@ -78,6 +79,10 @@ function rand(max) {
   return Math.floor(Math.random() * max);
 }
 
+function optionHash(opt) {
+  return keccak256(new Uint8Array([opt]));
+}
+
 async function main() {
   console.log(`Creator:          ${creator.address}`);
   console.log(`MicroTask:        ${CONTRACT_ADDRESS}`);
@@ -99,8 +104,7 @@ async function main() {
   const golden = new Map();
   for (let f = 0; f < frameCount; f++) golden.set(f, rand(OPTION_LABELS.length));
 
-  const indices = [...golden.keys()].map(BigInt);
-  const options = [...golden.values()];
+  const goldenHashes = [...golden.values()].map(optionHash);
   const escrow = rewardWei * BigInt(golden.size);
 
   console.log(`>> Creating task: "${title}"`);
@@ -110,7 +114,7 @@ async function main() {
     address: CONTRACT_ADDRESS,
     abi: ABI,
     functionName: "createTask",
-    args: [title, description, category, rewardWei, BigInt(frameCount), indices, options],
+    args: [title, description, category, 0, OPTION_LABELS.length, OPTION_LABELS, rewardWei, BigInt(frameCount), goldenHashes],
     value: escrow,
   });
   console.log(`   tx: ${createHash}`);
@@ -132,10 +136,10 @@ async function main() {
   const t = await publicClient.readContract({
     address: CONTRACT_ADDRESS,
     abi: ABI,
-    functionName: "tasks",
+    functionName: "getTask",
     args: [BigInt(taskId)],
   });
-  console.log(`Contract task #${taskId} -> reward=${formatEther(t[5])} MON bounty=${formatEther(t[6])} MON`);
+  console.log(`Contract task #${taskId} -> reward=${formatEther(t.reward)} MON bounty=${formatEther(t.bounty)} MON`);
 
   console.log(">> Funding 3 worker addresses...");
   const workers = [];
@@ -164,7 +168,7 @@ async function main() {
       address: CONTRACT_ADDRESS,
       abi: ABI,
       functionName: "submitAnswer",
-      args: [BigInt(taskId), BigInt(f), submit],
+      args: [BigInt(taskId), BigInt(f), optionHash(submit)],
     });
     await publicClient.waitForTransactionReceipt({ hash });
 
