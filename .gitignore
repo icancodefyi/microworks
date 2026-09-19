@@ -33,6 +33,12 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# foundry (contracts)
+/contracts/out
+/contracts/cache
+/contracts/broadcast
+!/contracts/.env.example
+
 # vercel
 .vercel
 
