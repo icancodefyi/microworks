@@ -9,7 +9,8 @@ import CreateTask from "@/components/CreateTask";
 import DoTask from "@/components/DoTask";
 import PayoutTicker from "@/components/PayoutTicker";
 import Leaderboard from "@/components/Leaderboard";
-import { CONTRACT_ADDRESS, EXPLORER, type MicroTask } from "@/lib/constants";
+import { useNetwork } from "@/lib/network";
+import { type MicroTask } from "@/lib/constants";
 import {
   IconSparkles,
   IconExternalLink,
@@ -22,6 +23,7 @@ import {
 export default function AppPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<MicroTask | null>(null);
+  const { network } = useNetwork();
 
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-stone-50 text-stone-900 antialiased selection:bg-stone-900 selection:text-white">
@@ -87,7 +89,7 @@ export default function AppPage() {
                 </Link>
 
                 <a
-                  href={`${EXPLORER}/address/${CONTRACT_ADDRESS}`}
+                  href={`${network.explorer}/address/${network.contractAddress}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-arcade-white inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-3 text-xs font-bold font-sans uppercase text-stone-800"
@@ -172,7 +174,7 @@ export default function AppPage() {
           </div>
           <div className="flex items-center gap-4 font-mono text-[11px]">
             <a
-              href={`${EXPLORER}/address/${CONTRACT_ADDRESS}`}
+              href={`${network.explorer}/address/${network.contractAddress}`}
               target="_blank"
               rel="noreferrer"
               className="hover:text-stone-900 transition underline underline-offset-2"

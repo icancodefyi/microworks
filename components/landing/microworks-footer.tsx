@@ -3,9 +3,11 @@ import React from "react";
 import Link from "next/link";
 import { MicroworksLogo } from "@/components/brand/microworks-logo";
 import { FOOTER_SECTIONS } from "./microworks-data";
-import { EXPLORER, TEAM_WALLET } from "@/lib/constants";
+import { TEAM_WALLET } from "@/lib/constants";
+import { useNetwork } from "@/lib/network";
 
 export function MicroworksFooter() {
+  const { network } = useNetwork();
   return (
     <footer className="w-full border-t border-stone-200 mt-10">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-12">
@@ -22,7 +24,7 @@ export function MicroworksFooter() {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href={`${EXPLORER}/address/${TEAM_WALLET}`}
+              href={`${network.explorer}/address/${TEAM_WALLET}`}
               className="text-xs font-mono text-stone-400 hover:text-stone-900 transition-colors"
             >
               built by 0x225B...8474

@@ -10,25 +10,28 @@ import {
   IconBolt,
 } from "@tabler/icons-react";
 import { CONTRACT_ABI } from "@/lib/abi";
-import { CONTRACT_ADDRESS, EXPLORER } from "@/lib/constants";
+import { useNetwork } from "@/lib/network";
 
 export default function Header() {
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const connector = connectors[0];
+  const { network, setNetwork } = useNetwork();
 
   const { data: pointsData } = useReadContract({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
     abi: CONTRACT_ABI,
+    chainId: network.chainId,
     functionName: "points",
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 4000 },
   });
 
   const { data: winData } = useReadContract({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
     abi: CONTRACT_ABI,
+    chainId: network.chainId,
     functionName: "winStreak",
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 4000 },
@@ -70,37 +73,79 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Center: Live Arcade HUD Pills (XP & Streak) */}
-        {isConnected && address ? (
-          <div className="flex items-center gap-2">
-            {/* XP Pill */}
-            <div className="flex items-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50/80 px-2.5 py-1 font-mono text-xs shadow-2xs">
-              <span className="flex h-4 w-4 items-center justify-center rounded-md bg-[#2977ff]/15 text-[#2977ff]">
-                <IconBolt size={11} />
-              </span>
-              <span className="font-bold text-stone-900">{xp}</span>
-              <span className="text-[10px] text-stone-400 font-semibold">XP</span>
+        {/* Center: Live Arcade HUD (Network Switch + XP & Streak) */}
+        <div className="flex items-center gap-2">
+          {/* Network Switcher: TESTNET / MAINNET */}
+          <a
+            href={`${network.explorer}/address/${network.contractAddress}`}
+            target="_blank"
+            rel="noreferrer"
+            className="hidden sm:block"
+            title={`View on ${network.explorer}`}
+          >
+            <div className="flex items-center gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1 font-mono text-[10px] font-black">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setNetwork("testnet");
+                }}
+                className={`rounded-lg px-2 py-1 uppercase tracking-wider transition cursor-pointer ${
+                  network.id === "testnet"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "text-stone-500 hover:text-stone-900"
+                }`}
+              >
+                Testnet
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setNetwork("mainnet");
+                }}
+                className={`rounded-lg px-2 py-1 uppercase tracking-wider transition cursor-pointer ${
+                  network.id === "mainnet"
+                    ? "bg-[#2977ff] text-white shadow-xs"
+                    : "text-stone-500 hover:text-stone-900"
+                }`}
+              >
+                Mainnet
+              </button>
             </div>
+          </a>
 
-            {/* Streak Combo Pill */}
-            {winStreak > 0 && (
-              <div className="flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-1 font-mono text-xs text-rose-700 shadow-2xs">
-                <IconFlame size={13} className="text-rose-600 animate-pulse" />
-                <span className="font-bold">x{winStreak}</span>
+          {isConnected && address ? (
+            <div className="flex items-center gap-2">
+              {/* XP Pill */}
+              <div className="flex items-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50/80 px-2.5 py-1 font-mono text-xs shadow-2xs">
+                <span className="flex h-4 w-4 items-center justify-center rounded-md bg-[#2977ff]/15 text-[#2977ff]">
+                  <IconBolt size={11} />
+                </span>
+                <span className="font-bold text-stone-900">{xp}</span>
+                <span className="text-[10px] text-stone-400 font-semibold">XP</span>
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full border border-stone-200 bg-stone-50 text-stone-700 text-xs font-mono">
-            <span className="relative flex size-2 shrink-0">
-              <span className="absolute inline-flex size-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
-              <span className="inline-flex size-2 rounded-full bg-emerald-500" />
-            </span>
-            <span className="font-semibold text-stone-800">Monad Testnet</span>
-            <span className="text-stone-400">·</span>
-            <span className="text-stone-500">1.2s Finality</span>
-          </div>
-        )}
+
+              {/* Streak Combo Pill */}
+              {winStreak > 0 && (
+                <div className="flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-1 font-mono text-xs text-rose-700 shadow-2xs">
+                  <IconFlame size={13} className="text-rose-600 animate-pulse" />
+                  <span className="font-bold">x{winStreak}</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full border border-stone-200 bg-stone-50 text-stone-700 text-xs font-mono">
+              <span className="relative flex size-2 shrink-0">
+                <span className="absolute inline-flex size-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+                <span className="inline-flex size-2 rounded-full bg-emerald-500" />
+              </span>
+              <span className="font-semibold text-stone-800">{network.label}</span>
+              <span className="text-stone-400">·</span>
+              <span className="text-stone-500">1.2s Finality</span>
+            </div>
+          )}
+        </div>
 
         {/* Right: Wallet Connect / Worker Profile */}
         <div className="flex items-center gap-2.5">

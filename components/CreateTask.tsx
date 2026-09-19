@@ -6,7 +6,6 @@ import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { CONTRACT_ABI } from "@/lib/abi";
 import {
   CATEGORIES,
-  CONTRACT_ADDRESS,
   OPTION_LABELS,
   KIND_OPTIONS,
   KIND_YESNO,
@@ -15,6 +14,7 @@ import {
   KIND_LABELS,
 } from "@/lib/constants";
 import { optionAnswerHash, textAnswerHash } from "@/lib/answers";
+import { useNetwork } from "@/lib/network";
 
 const KIND_HINTS: Record<number, string> = {
   [KIND_OPTIONS]: "Worker picks one of your options per frame.",
@@ -43,7 +43,11 @@ export default function CreateTask({
   const [error, setError] = useState("");
 
   const { data: hash, writeContract, isPending } = useWriteContract();
-  const { isSuccess, isLoading: isWaiting } = useWaitForTransactionReceipt({ hash });
+  const { network } = useNetwork();
+  const { isSuccess, isLoading: isWaiting } = useWaitForTransactionReceipt({
+    hash,
+    chainId: network.chainId,
+  });
 
   if (!open) return null;
 
@@ -144,8 +148,9 @@ export default function CreateTask({
       const optionCount = kind === KIND_OPTIONS ? optionsArr.length : kind === KIND_YESNO ? 2 : kind === KIND_RATING ? 5 : 0;
       const options = kind === KIND_OPTIONS ? optionsArr : [];
       writeContract({
-        address: CONTRACT_ADDRESS,
+        address: network.contractAddress,
         abi: CONTRACT_ABI,
+        chainId: network.chainId,
         functionName: "createTask",
         args: [
           title,
@@ -209,7 +214,7 @@ export default function CreateTask({
               Deploy Micro-Task & Bounty Vault
             </h2>
             <p className="mt-1 text-xs text-stone-500">
-              Contract verifies golden answers on Monad testnet with sub-second finality. Every correct answer pays instantly.
+              Contract verifies golden answers on {network.label} with sub-second finality. Every correct answer pays instantly.
             </p>
           </div>
 
@@ -424,7 +429,7 @@ export default function CreateTask({
 
             {isSuccess && (
               <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs text-emerald-700 flex items-center justify-between">
-                <span>✓ Task deployed successfully on Monad testnet!</span>
+                <span>✓ Task deployed successfully on {network.label}!</span>
                 <button
                   type="button"
                   onClick={onClose}

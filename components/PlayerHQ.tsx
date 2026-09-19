@@ -2,9 +2,8 @@
 
 import { useAccount, useConnect, useReadContract } from "wagmi";
 import { CONTRACT_ABI } from "@/lib/abi";
+import { useNetwork } from "@/lib/network";
 import {
-  CONTRACT_ADDRESS,
-  EXPLORER,
   levelForXp,
   badgesFor,
   XpLevels,
@@ -31,26 +30,30 @@ export default function PlayerHQ({
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const connector = connectors[0];
+  const { network } = useNetwork();
 
   const { data: pointsData } = useReadContract({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
     abi: CONTRACT_ABI,
+    chainId: network.chainId,
     functionName: "points",
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 4000 },
   });
 
   const { data: winData } = useReadContract({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
     abi: CONTRACT_ABI,
+    chainId: network.chainId,
     functionName: "winStreak",
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 4000 },
   });
 
   const { data: dayData } = useReadContract({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
     abi: CONTRACT_ABI,
+    chainId: network.chainId,
     functionName: "dayStreak",
     args: address ? [address] : undefined,
     query: { enabled: !!address, refetchInterval: 4000 },
@@ -176,7 +179,7 @@ export default function PlayerHQ({
                   {address.slice(0, 6)}…{address.slice(-4)}
                 </span>
                 <a
-                  href={`${EXPLORER}/address/${address}`}
+                  href={`${network.explorer}/address/${address}`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-stone-400 hover:text-[#2977ff] transition-colors"

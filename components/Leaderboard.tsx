@@ -2,16 +2,19 @@
 
 import { useAccount, useReadContract } from "wagmi";
 import { CONTRACT_ABI } from "@/lib/abi";
-import { CONTRACT_ADDRESS, EXPLORER, badgesFor, levelForXp } from "@/lib/constants";
+import { useNetwork } from "@/lib/network";
+import { badgesFor, levelForXp } from "@/lib/constants";
 import { IconCrown, IconFlame, IconTrophy, IconMedal, IconArrowUpRight } from "@tabler/icons-react";
 
 type Row = { addr: `0x${string}`; xp: number; win: number; day: number };
 
 export default function Leaderboard() {
   const { address } = useAccount();
+  const { network } = useNetwork();
   const { data } = useReadContract({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
     abi: CONTRACT_ABI,
+    chainId: network.chainId,
     functionName: "getLeaderboard",
     args: [20n],
     query: { refetchInterval: 4000 },
@@ -53,7 +56,7 @@ export default function Leaderboard() {
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-800">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          MONAD TESTNET RANKINGS
+          MONAD {network.shortLabel} RANKINGS
         </span>
       </div>
 
@@ -144,7 +147,7 @@ export default function Leaderboard() {
                       {/* Worker Address & Level */}
                       <div className="my-3 space-y-1">
                         <a
-                          href={`${EXPLORER}/address/${podiumRow.addr}`}
+                          href={`${network.explorer}/address/${podiumRow.addr}`}
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex items-center gap-1 font-mono text-xs font-bold text-stone-900 hover:text-[#2977ff] transition-colors"
@@ -204,7 +207,7 @@ export default function Leaderboard() {
                           <div>
                             <div className="flex items-center gap-1.5">
                               <a
-                                href={`${EXPLORER}/address/${row.addr}`}
+                                href={`${network.explorer}/address/${row.addr}`}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="font-mono font-bold text-stone-900 hover:text-[#2977ff] transition-colors"

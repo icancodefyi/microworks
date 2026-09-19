@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { formatEther } from "viem";
 import { useReadContracts, useReadContract } from "wagmi";
 import { CONTRACT_ABI } from "@/lib/abi";
+import { useNetwork } from "@/lib/network";
 import {
-  CONTRACT_ADDRESS,
   taskObjectToMicroTask,
   type MicroTask,
   KIND_OPTIONS,
@@ -46,9 +46,12 @@ export default function TaskList({
   const [selectedClass, setSelectedClass] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const { network } = useNetwork();
+
   const { data: countData, refetch: refetchCount } = useReadContract({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
     abi: CONTRACT_ABI,
+    chainId: network.chainId,
     functionName: "taskCount",
   });
 
@@ -57,12 +60,13 @@ export default function TaskList({
   const contracts = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => ({
-        address: CONTRACT_ADDRESS,
+        address: network.contractAddress,
         abi: CONTRACT_ABI,
+        chainId: network.chainId,
         functionName: "getTask" as const,
         args: [BigInt(i)] as const,
       })),
-    [count],
+    [count, network.contractAddress, network.chainId],
   );
 
   const { data: tasksData, refetch } = useReadContracts({

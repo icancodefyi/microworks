@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useWatchContractEvent, useAccount } from "wagmi";
 import { formatUnits } from "viem";
 import { CONTRACT_ABI } from "@/lib/abi";
-import { CONTRACT_ADDRESS, EXPLORER } from "@/lib/constants";
+import { useNetwork } from "@/lib/network";
 import { IconExternalLink, IconFlame, IconRadio } from "@tabler/icons-react";
 
 type FeedEvent = {
@@ -23,6 +23,7 @@ const MAX_ITEMS = 35;
 
 export default function PayoutTicker() {
   const { address } = useAccount();
+  const { network } = useNetwork();
   const [feed, setFeed] = useState<FeedEvent[]>([]);
   const [filterMode, setFilterMode] = useState<"all" | "mine" | "accepted">("all");
   const me = address?.toLowerCase();
@@ -41,7 +42,8 @@ export default function PayoutTicker() {
   });
 
   useWatchContractEvent({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
+    chainId: network.chainId,
     abi: CONTRACT_ABI,
     eventName: "AnswerAccepted",
     onLogs: (logs) =>
@@ -57,7 +59,8 @@ export default function PayoutTicker() {
   });
 
   useWatchContractEvent({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
+    chainId: network.chainId,
     abi: CONTRACT_ABI,
     eventName: "AnswerRejected",
     onLogs: (logs) =>
@@ -72,7 +75,8 @@ export default function PayoutTicker() {
   });
 
   useWatchContractEvent({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
+    chainId: network.chainId,
     abi: CONTRACT_ABI,
     eventName: "AnswerPending",
     onLogs: (logs) =>
@@ -87,7 +91,8 @@ export default function PayoutTicker() {
   });
 
   useWatchContractEvent({
-    address: CONTRACT_ADDRESS,
+    address: network.contractAddress,
+    chainId: network.chainId,
     abi: CONTRACT_ABI,
     eventName: "TaskCreated",
     onLogs: (logs) =>
@@ -276,7 +281,7 @@ export default function PayoutTicker() {
 
       {/* Explorer Footer */}
       <a
-        href={EXPLORER}
+        href={network.explorer}
         target="_blank"
         rel="noreferrer"
         className="flex items-center justify-center gap-1.5 border-t border-stone-200 bg-stone-50/90 px-4 py-2.5 text-xs font-mono font-semibold text-stone-700 hover:text-stone-950 hover:bg-stone-100 transition-colors"

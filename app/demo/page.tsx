@@ -17,7 +17,7 @@ import {
   IconBolt,
   IconTrophy,
 } from "@tabler/icons-react";
-import { CONTRACT_ADDRESS, EXPLORER } from "@/lib/constants";
+import { useNetwork } from "@/lib/network";
 
 const SCENES = [
   { time: 0, title: "1.2s Parallel Finality", icon: "⚡", desc: "Monad throughput & parallel consensus" },
@@ -32,6 +32,7 @@ export default function DemoPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [activeScene, setActiveScene] = useState(0);
+  const { network } = useNetwork();
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -265,7 +266,7 @@ export default function DemoPage() {
               Start earning MON or deploy your first micro-task.
             </h2>
             <p className="text-xs text-stone-400 font-sans max-w-lg">
-              Contract deployed at {CONTRACT_ADDRESS.slice(0, 10)}…{CONTRACT_ADDRESS.slice(-6)} on Monad testnet.
+              Contract deployed at {network.contractAddress.slice(0, 10)}…{network.contractAddress.slice(-6)} on {network.label}.
             </p>
           </div>
 
@@ -278,7 +279,7 @@ export default function DemoPage() {
             </Link>
 
             <a
-              href={`${EXPLORER}/address/${CONTRACT_ADDRESS}`}
+              href={`${network.explorer}/address/${network.contractAddress}`}
               target="_blank"
               rel="noreferrer"
               className="btn-arcade-white inline-flex items-center gap-1.5 rounded-2xl px-5 py-3.5 text-xs font-bold uppercase text-stone-800"
@@ -306,7 +307,7 @@ export default function DemoPage() {
               Launch App
             </Link>
             <a
-              href={`${EXPLORER}/address/${CONTRACT_ADDRESS}`}
+              href={`${network.explorer}/address/${network.contractAddress}`}
               target="_blank"
               rel="noreferrer"
               className="hover:text-stone-900 transition"

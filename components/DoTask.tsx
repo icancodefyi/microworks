@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { formatEther, decodeEventLog, getEventSelector } from "viem";
 import { useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { CONTRACT_ABI } from "@/lib/abi";
+import { useNetwork } from "@/lib/network";
 import {
-  CONTRACT_ADDRESS,
-  EXPLORER,
   OPTION_LABELS,
   KIND_OPTIONS,
   KIND_YESNO,
@@ -52,7 +51,11 @@ export default function DoTask({
   const [soundOn, setSoundOn] = useState(true);
 
   const { data: hash, writeContract, isPending, reset } = useWriteContract();
-  const { data: receipt, isSuccess, isLoading: isWaiting } = useWaitForTransactionReceipt({ hash });
+  const { network } = useNetwork();
+  const { data: receipt, isSuccess, isLoading: isWaiting } = useWaitForTransactionReceipt({
+    hash,
+    chainId: network.chainId,
+  });
 
   const toggleSound = () => {
     sounds.enabled = !soundOn;
@@ -65,7 +68,7 @@ export default function DoTask({
     let sawRejected = false;
     let streakCount = 0;
     for (const log of receipt.logs) {
-      if (log.address?.toLowerCase() !== CONTRACT_ADDRESS.toLowerCase()) continue;
+      if (log.address?.toLowerCase() !== network.contractAddress.toLowerCase()) continue;
       const topic = log.topics?.[0]?.toLowerCase();
       try {
         const ev = decodeEventLog({
@@ -109,7 +112,7 @@ export default function DoTask({
     } else {
       setOutcome("pending");
     }
-  }, [receipt, hash]);
+  }, [receipt, hash, network.contractAddress]);
 
   const maxFrame = Math.max(0, Number(task.frameCount) - 1);
 
@@ -125,8 +128,9 @@ export default function DoTask({
       const answerHash =
         task.kind === KIND_TEXT ? textAnswerHash(String(answer)) : optionAnswerHash(Number(answer));
       writeContract({
-        address: CONTRACT_ADDRESS,
+        address: network.contractAddress,
         abi: CONTRACT_ABI,
+        chainId: network.chainId,
         functionName: "submitAnswer",
         args: [task.id, BigInt(frameId), answerHash],
       });
@@ -399,7 +403,7 @@ export default function DoTask({
                 </div>
                 {hash && (
                   <a
-                    href={`${EXPLORER}/tx/${hash}`}
+                    href={`${network.explorer}/tx/${hash}`}
                     target="_blank"
                     rel="noreferrer"
                     className="font-mono text-[11px] font-bold text-[#2977ff] underline"
@@ -447,7 +451,7 @@ export default function DoTask({
                 </div>
                 {hash && (
                   <a
-                    href={`${EXPLORER}/tx/${hash}`}
+                    href={`${network.explorer}/tx/${hash}`}
                     target="_blank"
                     rel="noreferrer"
                     className="font-mono text-[11px] font-bold text-[#2977ff] underline"
