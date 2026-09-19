@@ -1,0 +1,138 @@
+export const AB = [
+  {
+    type: "constructor",
+    stateMutability: "nonpayable",
+    inputs: [],
+  },
+  {
+    type: "function",
+    name: "taskCount",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "tasks",
+    stateMutability: "view",
+    inputs: [{ name: "", type: "uint256" }],
+    outputs: [
+      { name: "id", type: "uint256" },
+      { name: "creator", type: "address" },
+      { name: "title", type: "string" },
+      { name: "description", type: "string" },
+      { name: "category", type: "string" },
+      { name: "reward", type: "uint256" },
+      { name: "bounty", type: "uint256" },
+      { name: "completed", type: "uint256" },
+      { name: "rejected", type: "uint256" },
+      { name: "pending", type: "uint256" },
+      { name: "frameCount", type: "uint256" },
+      { name: "active", type: "bool" },
+    ],
+  },
+  {
+    type: "function",
+    name: "accuracyOf",
+    stateMutability: "view",
+    inputs: [{ name: "", type: "address" }],
+    outputs: [
+      { name: "correct", type: "uint32" },
+      { name: "attempted", type: "uint32" },
+    ],
+  },
+  {
+    type: "function",
+    name: "protocolFee",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "createTask",
+    stateMutability: "payable",
+    inputs: [
+      { name: "title", type: "string" },
+      { name: "description", type: "string" },
+      { name: "category", type: "string" },
+      { name: "rewardPerFrame", type: "uint256" },
+      { name: "frameCount", type: "uint256" },
+      { name: "goldenFrameIndices", type: "uint256[]" },
+      { name: "correctAnswers", type: "uint8[]" },
+    ],
+    outputs: [{ name: "id", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "submitAnswer",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "taskId", type: "uint256" },
+      { name: "frameId", type: "uint256" },
+      { name: "option", type: "uint8" },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "closeTask",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "taskId", type: "uint256" }],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "withdrawFees",
+    stateMutability: "nonpayable",
+    inputs: [],
+    outputs: [],
+  },
+  {
+    type: "event",
+    name: "TaskCreated",
+    inputs: [
+      { name: "id", type: "uint256", indexed: true },
+      { name: "creator", type: "address", indexed: false },
+      { name: "category", type: "string", indexed: false },
+      { name: "reward", type: "uint256", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "AnswerAccepted",
+    inputs: [
+      { name: "taskId", type: "uint256", indexed: true },
+      { name: "frameId", type: "uint256", indexed: false },
+      { name: "worker", type: "address", indexed: false },
+      { name: "amount", type: "uint256", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "AnswerRejected",
+    inputs: [
+      { name: "taskId", type: "uint256", indexed: true },
+      { name: "frameId", type: "uint256", indexed: false },
+      { name: "worker", type: "address", indexed: false },
+      { name: "option", type: "uint8", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "AnswerPending",
+    inputs: [
+      { name: "taskId", type: "uint256", indexed: true },
+      { name: "frameId", type: "uint256", indexed: false },
+      { name: "worker", type: "address", indexed: false },
+      { name: "option", type: "uint8", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "TaskClosed",
+    inputs: [{ name: "taskId", type: "uint256", indexed: true }],
+  },
+] as const;
+
+export const CONTRACT_ABI = AB;

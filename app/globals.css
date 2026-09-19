@@ -1,26 +1,322 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "./autosend.css";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans), "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-cooper: var(--font-cooper), "cooperLtBT", Georgia, "Times New Roman", serif;
+  --font-cooper-lt-bt: var(--font-cooper), "cooperLtBT", Georgia, "Times New Roman", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --color-canvas: #fafaf9;
+  --color-surface-1: #ffffff;
+  --color-surface-2: #f5f5f4;
+  --color-surface-3: #e7e5e4;
+  --color-surface-4: #d6d3d1;
+  --color-hairline: #e7e5e4;
+  --color-hairline-strong: #d6d3d1;
+  --color-hairline-tertiary: #f5f5f4;
+  --color-ink: #1c1917;
+  --color-ink-muted: #44403c;
+  --color-ink-subtle: #78716c;
+  --color-ink-tertiary: #a8a29e;
+  --color-primary: #2a78ff;
+  --color-primary-hover: #1a68ec;
+  --color-primary-focus: #1557c7;
+  --color-brand: #2a78ff;
+  --color-brand-hover: #1a68ec;
+  --color-brand-focus: #1557c7;
+  --color-brand-light: #eff6ff;
+  --color-brand-tint: rgba(42, 120, 255, 0.08);
+  --color-brand-border: rgba(42, 120, 255, 0.20);
+  --color-success: #10b981;
+}
+
+:root {
+  --font-geist-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-geist-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --font-cooper: "cooperLtBT", Georgia, "Times New Roman", serif;
+  --font-cooper-lt-bt: "cooperLtBT", Georgia, "Times New Roman", serif;
+  --font-data-type: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  --brand: #2a78ff;
+  --brand-hover: #1a68ec;
+  --brand-tint: rgba(42, 120, 255, 0.08);
+  --brand-border: rgba(42, 120, 255, 0.20);
+  color-scheme: light;
+}
+
+/* Explicit font family utilities for bulletproof fallback */
+.font-cooper {
+  font-family: var(--font-cooper), "cooperLtBT", Georgia, "Times New Roman", serif !important;
+}
+
+.font-mono {
+  font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace !important;
+}
+
+.font-sans {
+  font-family: var(--font-geist-sans), "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.font-datatype {
+  font-family: var(--font-geist-mono), "Geist Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@layer components {
+  /* Typography roles — Editorial AutoSend hierarchy */
+  .page-title {
+    font-family: var(--font-geist-sans, sans-serif);
+    @apply text-2xl md:text-3xl font-normal leading-tight tracking-tight text-ink;
+  }
+  .page-subtitle {
+    @apply mt-1 text-sm leading-relaxed text-ink-subtle;
+  }
+  .section-title {
+    @apply text-base font-semibold tracking-[-0.01em] text-ink;
+  }
+  .item-title {
+    @apply text-[0.9375rem] font-medium tracking-[-0.005em] text-ink;
+  }
+  .eyebrow {
+    font-family: var(--font-geist-mono, monospace);
+    @apply text-xs font-semibold uppercase tracking-wider text-ink-subtle;
+  }
+
+  /* Cards & containers */
+  .card {
+    @apply rounded-xl border border-hairline bg-surface-1 shadow-xs;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    font-family: var(--font-geist-mono, monospace);
+    background: #2a78ff;
+    border: 1px solid #1a68ec;
+    box-shadow: 0 2px 8px rgba(42, 120, 255, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #1a68ec;
+    border-color: #1557c7;
+    box-shadow: 0 4px 12px rgba(42, 120, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+
+  .btn-secondary {
+    font-family: var(--font-geist-mono, monospace);
+    background: #ffffff;
+    border: 1px solid #e7e5e4;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    color: #1c1917;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background: #fafaf9;
+    border-color: #2a78ff;
+    color: #2a78ff;
+  }
+
+  /* Inputs */
+  .input-base {
+    @apply rounded-xl border border-hairline bg-surface-1 px-3.5 py-2 text-sm text-ink shadow-xs outline-none transition-colors placeholder:text-ink-tertiary focus:border-[#2a78ff] focus:ring-1 focus:ring-[#2a78ff];
+  }
+}
+
+strong,
+b {
+  font-weight: 600;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: rgba(42, 120, 255, 0.20);
+  color: #1c1917;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(42, 120, 255, 0.6);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 8px;
+  border: 2px solid var(--background);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #a8a29e;
+}
+
+/* Exact In-place Keyframes and Animation Utilities */
+.logo-carousel-item {
+  --duration: 0.5s;
+  --curve: ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-carousel-item[data-state=enter] {
+  opacity: 0;
+}
+.logo-carousel-item[data-state=exit] {
+  opacity: 1;
+}
+.logo-carousel-item[data-animate=false] {
+  animation: none;
+}
+.logo-carousel-item[data-state=enter][data-animate=true] {
+  animation: logo-carousel-enter var(--duration) var(--curve) var(--delay) both;
+}
+.logo-carousel-item[data-state=exit][data-animate=true] {
+  animation: logo-carousel-exit var(--duration) var(--curve) var(--delay) both;
+}
+@keyframes logo-carousel-enter {
+  0% {
+    filter: blur(4px);
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    filter: blur(0px);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes logo-carousel-exit {
+  0% {
+    filter: blur(0px);
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    filter: blur(4px);
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes logo-carousel-enter {
+    0% { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes logo-carousel-exit {
+    0% { opacity: 1; }
+    to { opacity: 0; }
+  }
+}
+
+/* Showcase Tab Progress Bar */
+@keyframes showcase-tab-progress {
+  0% {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes showcase-tab-progress-horizontal {
+  0% {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .showcase-tab-progress-bar {
+    transform: translateY(0);
+    animation: none !important;
+  }
+}
+
+/* Blinking Cursor for Hero prompt */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  50.01%, 100% {
+    opacity: 0;
+  }
+}
+.animate-blink {
+  animation: blink 1s infinite;
+}
+
+/* Indeterminate progress shimmer */
+@keyframes indeterminate-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-indeterminate {
+  animation: indeterminate-progress 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Subtle, sleek custom scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #d6d3d1 transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #d6d3d1;
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: #a8a29e;
 }
