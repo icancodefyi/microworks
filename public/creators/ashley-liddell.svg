@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <defs>
+    <linearGradient id="bg-ashley" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#451a03"/>
+      <stop offset="50%" stop-color="#78350f"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="aura-ashley" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="skin-ashley" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+    <filter id="shadow-ashley" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="240" height="240" rx="40" fill="url(#bg-ashley)"/>
+  <circle cx="120" cy="110" r="85" fill="#f59e0b" opacity="0.18" filter="blur(22px)"/>
+
+  <!-- Halo Ring -->
+  <circle cx="120" cy="110" r="76" fill="none" stroke="url(#aura-ashley)" stroke-width="2.5" opacity="0.7" stroke-dasharray="6,4"/>
+
+  <!-- Shoulders / Keynote Jacket -->
+  <g filter="url(#shadow-ashley)">
+    <path d="M42 225 C44 165 72 152 120 152 C168 152 196 165 198 225 Z" fill="#1c1917"/>
+    <path d="M78 160 L120 220 L162 160 Z" fill="#451a03"/>
+    <!-- Collar -->
+    <path d="M98 152 L120 180 L142 152 Z" fill="#fef3c7"/>
+  </g>
+
+  <!-- Neck -->
+  <path d="M104 125 L104 154 C104 162 136 162 136 154 L136 125 Z" fill="#fb923c" opacity="0.7"/>
+
+  <!-- Head / Face -->
+  <ellipse cx="120" cy="100" rx="35" ry="42" fill="url(#skin-ashley)"/>
+
+  <!-- Styled Contemporary Haircut -->
+  <path d="M82 86 C82 52 96 42 120 42 C144 42 158 52 158 86 C152 74 140 66 120 66 C100 66 88 74 82 86 Z" fill="#292524"/>
+  <path d="M110 44 C128 42 146 50 152 64 C140 52 124 48 110 44 Z" fill="#44403c"/>
+
+  <!-- Eyes -->
+  <circle cx="103" cy="98" r="3.5" fill="#1c1917"/>
+  <circle cx="137" cy="98" r="3.5" fill="#1c1917"/>
+
+  <!-- Confident Smile -->
+  <path d="M107 118 Q120 127 133 118" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Verified Creator Badge -->
+  <g transform="translate(182, 26)">
+    <circle cx="16" cy="16" r="16" fill="#ffffff" filter="url(#shadow-ashley)"/>
+    <circle cx="16" cy="16" r="14" fill="url(#aura-ashley)"/>
+    <path d="M11 16 L15 20 L22 12" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Brand Pill Tag -->
+  <g transform="translate(24, 26)">
+    <rect width="84" height="22" rx="11" fill="#451a03" fill-opacity="0.9" stroke="#b45309" stroke-width="1"/>
+    <text x="42" y="15" fill="#fde68a" font-family="system-ui, sans-serif" font-size="10" font-weight="700" text-anchor="middle" letter-spacing="0.5">GEO PIONEER</text>
+  </g>
+</svg>
