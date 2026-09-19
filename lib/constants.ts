@@ -1,5 +1,5 @@
 export const CONTRACT_ADDRESS =
-  "0x0000000000000000000000000000000000000000" as `0x${string}`;
+  "0x61ab6619031b483139ada409955c2dcd01579ed7" as `0x${string}`;
 
 export const FEE_BPS = 200n; // 2% protocol fee
 

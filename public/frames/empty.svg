@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Samplet framekg: empty road">
+  <rect width="640" height="360" fill="#cfe6f0"/>
+  <rect y="150" width="640" height="210" fill="#5a6b74"/>
+  <rect y="150" width="640" height="22" fill="#4a5a63"/>
+  <rect y="196" width="640" height="90" fill="#3c4b52"/>
+  <rect y="286" width="640" height="74" fill="#2f3b41"/>
+  <rect x="0" y="196" width="640" height="8" fill="#f2f0e6" opacity="0.9"/>
+  <rect x="120" y="160" width="8" height="36" fill="#e8e6da"/>
+  <rect x="360" y="160" width="8" height="36" fill="#e8e6da"/>
+  <rect x="120" y="180" width="180" height="6" fill="#e8e6da" opacity="0.7"/>
+  <rect x="340" y="180" width="180" height="6" fill="#e8e6da" opacity="0.7"/>
+  <rect x="0" y="8" width="180" height="26" fill="#0f1418" opacity="0.55" rx="4"/>
+  <text x="14" y="25" font-family="ui-monospace, monospace" font-size="12" fill="#e8f2f7">DEMO FRAME · EMPTY ROAD</text>
+  <rect x="0" y="344" width="150" height="16" fill="#0f1418" opacity="0.55" rx="3"/>
+  <text x="10" y="356" font-family="ui-monospace, monospace" font-size="10" fill="#9fc3d4">sample visual · not production data</text>
+</svg>

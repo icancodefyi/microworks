@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Sample frame: vehicle ahead">
+  <rect width="640" height="360" fill="#cfe6f0"/>
+  <rect y="150" width="640" height="210" fill="#5a6b74"/>
+  <rect y="150" width="640" height="22" fill="#4a5a63"/>
+  <rect y="196" width="640" height="90" fill="#3c4b52"/>
+  <rect y="286" width="640" height="74" fill="#2f3b41"/>
+  <rect x="0" y="196" width="640" height="8" fill="#f2f0e6" opacity="0.9"/>
+  <g stroke="#e8e6da" stroke-width="7" opacity="0.85">
+    <line x1="100" y1="196" x2="100" y2="286"/>
+    <line x1="300" y1="196" x2="300" y2="286"/>
+    <line x1="500" y1="196" x2="500" y2="286"/>
+  </g>
+  <rect x="150" y="218" width="230" height="52" rx="14" fill="#c03939" stroke="#1d2730" stroke-width="5"/>
+  <rect x="166" y="186" width="150" height="40" rx="12" fill="#c03939" stroke="#1d2730" stroke-width="5"/>
+  <rect x="322" y="196" width="44" height="26" rx="6" fill="#c03939" stroke="#1d2730" stroke-width="4"/>
+  <rect x="122" y="188" width="34" height="30" rx="8" fill="#8f2e2e" stroke="#1d2730" stroke-width="4"/>
+  <rect x="374" y="188" width="34" height="30" rx="8" fill="#8f2e2e" stroke="#1d2730" stroke-width="4"/>
+  <rect x="180" y="258" width="46" height="16" rx="8" fill="#111820"/>
+  <rect x="292" y="258" width="46" height="16" rx="8" fill="#111820"/>
+  <rect x="0" y="8" width="190" height="26" fill="#0f1418" opacity="0.55" rx="4"/>
+  <text x="14" y="25" font-family="ui-monospace, monospace" font-size="12" fill="#e8f2f7">DEMO FRAME · VEHICLE AHEAD</text>
+  <rect x="0" y="344" width="150" height="16" fill="#0f1418" opacity="0.55" rx="3"/>
+  <text x="10" y="356" font-family="ui-monospace, monospace" font-size="10" fill="#9fc3d4">sample visual · not production data</text>
+</svg>
