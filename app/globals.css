@@ -21,15 +21,15 @@
   --color-ink-muted: #44403c;
   --color-ink-subtle: #78716c;
   --color-ink-tertiary: #a8a29e;
-  --color-primary: #2a78ff;
-  --color-primary-hover: #1a68ec;
-  --color-primary-focus: #1557c7;
-  --color-brand: #2a78ff;
-  --color-brand-hover: #1a68ec;
-  --color-brand-focus: #1557c7;
+  --color-primary: #2977ff;
+  --color-primary-hover: #1967ef;
+  --color-primary-focus: #1456d7;
+  --color-brand: #2977ff;
+  --color-brand-hover: #1967ef;
+  --color-brand-focus: #1456d7;
   --color-brand-light: #eff6ff;
-  --color-brand-tint: rgba(42, 120, 255, 0.08);
-  --color-brand-border: rgba(42, 120, 255, 0.20);
+  --color-brand-tint: rgba(41, 119, 255, 0.08);
+  --color-brand-border: rgba(41, 119, 255, 0.20);
   --color-success: #10b981;
 }
 
@@ -41,10 +41,10 @@
   --font-data-type: var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
   --background: #fafaf9;
   --foreground: #1c1917;
-  --brand: #2a78ff;
-  --brand-hover: #1a68ec;
-  --brand-tint: rgba(42, 120, 255, 0.08);
-  --brand-border: rgba(42, 120, 255, 0.20);
+  --brand: #2977ff;
+  --brand-hover: #1967ef;
+  --brand-tint: rgba(41, 119, 255, 0.08);
+  --brand-border: rgba(41, 119, 255, 0.20);
   color-scheme: light;
 }
 
@@ -119,16 +119,16 @@ h4 {
   /* Buttons */
   .btn-primary {
     font-family: var(--font-geist-mono, monospace);
-    background: #2a78ff;
-    border: 1px solid #1a68ec;
-    box-shadow: 0 2px 8px rgba(42, 120, 255, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    background: #2977ff;
+    border: 1px solid #1967ef;
+    box-shadow: 0 2px 8px rgba(41, 119, 255, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     color: #ffffff;
     @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary:hover:not(:disabled) {
-    background: #1a68ec;
-    border-color: #1557c7;
-    box-shadow: 0 4px 12px rgba(42, 120, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    background: #1967ef;
+    border-color: #1456d7;
+    box-shadow: 0 4px 12px rgba(41, 119, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   }
 
   .btn-secondary {
@@ -141,13 +141,13 @@ h4 {
   }
   .btn-secondary:hover:not(:disabled) {
     background: #fafaf9;
-    border-color: #2a78ff;
-    color: #2a78ff;
+    border-color: #2977ff;
+    color: #2977ff;
   }
 
   /* Inputs */
   .input-base {
-    @apply rounded-xl border border-hairline bg-surface-1 px-3.5 py-2 text-sm text-ink shadow-xs outline-none transition-colors placeholder:text-ink-tertiary focus:border-[#2a78ff] focus:ring-1 focus:ring-[#2a78ff];
+    @apply rounded-xl border border-hairline bg-surface-1 px-3.5 py-2 text-sm text-ink shadow-xs outline-none transition-colors placeholder:text-ink-tertiary focus:border-[#2977ff] focus:ring-1 focus:ring-[#2977ff];
   }
 }
 
