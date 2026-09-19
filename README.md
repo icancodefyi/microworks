@@ -11,10 +11,12 @@ Built to feel like a game, not a gig board: every correct answer earns **+100 XP
 | | |
 |---|---|
 | **Live demo** | **https://microworks.impiclabs.com** (custom domain, real users) |
-| **Contract** | **`0x26e67271c65ac40d419dffe8d6ad7ffcb2755237`** on **Monad Testnet** (chain id `10143`) |
-| **Explorer** | https://testnet.monadexplorer.com/address/0x26e67271c65ac40d419dffe8d6ad7ffcb2755237 |
+| **Contract (testnet)** | **`0x26e67271c65ac40d419dffe8d6ad7ffcb2755237`** on **Monad Testnet** (chain id `10143`) |
+| **Explorer (testnet)** | https://testnet.monadexplorer.com/address/0x26e67271c65ac40d419dffe8d6ad7ffcb2755237 |
+| **Contract (mainnet)** | **`0x61ab6619031b483139ada409955c2dcd01579ed7`** on **Monad Mainnet** (chain id `143`) — source **verified** |
+| **Explorer (mainnet)** | https://monadscan.com/address/0x61ab6619031b483139ada409955c2dcd01579ed7#code |
 | **Code** | https://github.com/icancodefyi/microworks |
-| **RPC** | `https://testnet-rpc.monad.xyz` |
+| **RPC (testnet)** | `https://testnet-rpc.monad.xyz` |
 
 ## Build in public — live posts & metrics
 
@@ -278,7 +280,7 @@ Verified contract = permanent "Source published" badge on MonadVision (rubric: *
 ### Advance — project working (100)
 - [x] **All announced functions working** — feature checklist above, all live — 25
 - [x] **Live transaction during the demo** — answer a seeded frame (cheat sheet above) and watch it payout — 25
-- [ ] **Contract verified on explorer** (source published) — 3-step, see above — 25
+- [x] **Contract verified on explorer** (source published) — **mainnet contract verified on MonadScan** — 25
 - [x] **Someone else can run it from the README** — "Run it yourself" section is written for zero-handholding — 25
 
 ### Advance — build in public (100, off-repo)
@@ -290,7 +292,7 @@ Verified contract = permanent "Source published" badge on MonadVision (rubric: *
 
 ### Bonus (100)
 - [x] **Custom domain** — `microworks.impiclabs.com` (Caddy + Let's Encrypt) — 15
-- [ ] **Mainnet deployment** (organizer-verified) — planned, one-command after testnet EOL — 25
+- [x] **Mainnet deployment** — `0x61ab6619031b483139ada409955c2dcd01579ed7` on **Monad Mainnet** (`143`), **source verified** on MonadScan — 25
 - **Pre-market fit** — see [Problem & market fit](#problem--market-fit)
 - **Revenue potential** — see [Business model & revenue](#business-model--revenue)
 - **Innovation & originality** — see [Why it's innovative](#why-its-innovative)
@@ -328,8 +330,8 @@ Who this serves (and can demo live **today**):
 
 ## Roadmap
 
-- Verify the contract on MonadVision (this weekend, before submission lock)
-- **Mainnet deployment** (Monad mainnet, chain id `143`) — same bytecode path currently configured
+- Verify the testnet contract on MonadVision (source is published for mainnet, so the same file verifies in one click)
+- Fund and launch real mainnet quests (contract is live and verified at `0x61ab…79ed7`)
 - More task kinds (image selection, N-ary, sliding-scale annotations)
 - Delegated/sponsored quests and a fee-treasury dashboard
 - LP/worker reputation oracle across tasks (reuse `getLeaderboard`)
