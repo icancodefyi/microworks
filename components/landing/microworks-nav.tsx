@@ -38,13 +38,7 @@ export function MicroworksNav() {
                 className="flex font-sans px-2.5 py-1 items-center uppercase text-xs font-semibold select-none cursor-pointer rounded-lg hover:bg-stone-100 transition-colors duration-200 text-stone-700 hover:text-blue-600"
                 href="#showcase"
               >
-                Protocol
-              </a>
-              <a
-                className="flex font-sans px-2.5 py-1 items-center uppercase text-xs font-semibold select-none cursor-pointer rounded-lg hover:bg-stone-100 transition-colors duration-200 text-stone-700 hover:text-blue-600"
-                href="#integrations"
-              >
-                Integrations
+                How It Works
               </a>
               <a
                 className="flex font-sans px-2.5 py-1 items-center uppercase text-xs font-semibold select-none cursor-pointer rounded-lg hover:bg-stone-100 transition-colors duration-200 text-stone-700 hover:text-blue-600"

@@ -3,7 +3,6 @@ import "./autosend.css";
 import { MicroworksNav } from "@/components/landing/microworks-nav";
 import { MicroworksHero } from "@/components/landing/microworks-hero";
 import { MicroworksFeatures } from "@/components/landing/microworks-features";
-import { MicroworksSkills } from "@/components/landing/microworks-skills";
 import { MicroworksShowcase } from "@/components/landing/microworks-showcase";
 import { MicroworksMultiCampaign } from "@/components/landing/microworks-multi-campaign";
 import { MicroworksSocialFaq } from "@/components/landing/microworks-social-faq";
@@ -12,7 +11,7 @@ import { MicroworksFooter } from "@/components/landing/microworks-footer";
 export const metadata: Metadata = {
   title: "Microworks: Micro-tasks, Micro-wins · Monad",
   description:
-    "Kill dead time. Settle micro-wins in under 2 seconds. Programmatic HTTP 402 micro-tasks, parallel consensus & instant Monad payouts.",
+    "A micro-task marketplace on Monad. Post a task, verify with a golden key, and pay workers instantly — label, vote, verify, caption, earn.",
 };
 
 export default function HomePage() {
@@ -29,7 +28,6 @@ export default function HomePage() {
               <div className="flex flex-col">
                 <MicroworksHero />
                 <MicroworksFeatures />
-                <MicroworksSkills />
                 <MicroworksShowcase />
                 <MicroworksMultiCampaign />
                 <MicroworksSocialFaq />

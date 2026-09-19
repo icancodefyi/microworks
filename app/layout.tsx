@@ -38,7 +38,7 @@ const cooperLtBT = localFont({
 export const metadata: Metadata = {
   title: "Microworks: Micro-tasks, Micro-wins · Monad",
   description:
-    "Kill dead time. Settle micro-wins in under 2 seconds. Programmatic HTTP 402 micro-tasks, parallel consensus & instant Monad payouts.",
+    "A micro-task marketplace on Monad. Post a task, verify with a golden key, and pay workers instantly — label, vote, verify, caption, earn.",
 };
 
 export const viewport: Viewport = {

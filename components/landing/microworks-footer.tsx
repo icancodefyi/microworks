@@ -16,7 +16,7 @@ export function MicroworksFooter() {
               <MicroworksLogo markSize={24} textClassName="text-stone-900" />
             </Link>
             <p className="text-xs text-stone-500 font-sans leading-relaxed">
-              On-chain micro-work and consensus settlement engine built on Monad and HTTP 402.
+              On-chain micro-task marketplace built on Monad. Post a task, verify with a golden key, earn instantly.
             </p>
           </div>
 
@@ -29,12 +29,23 @@ export function MicroworksFooter() {
               <ul className="flex flex-col gap-2">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-xs font-sans text-stone-500 hover:text-stone-900 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
+                    {link.external ? (
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={link.href}
+                        className="text-xs font-sans text-stone-500 hover:text-stone-900 transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-xs font-sans text-stone-500 hover:text-stone-900 transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -71,7 +82,7 @@ export function MicroworksFooter() {
               rel="noreferrer"
               aria-label="Microworks on GitHub"
               className="text-stone-700 hover:text-stone-950 transition-colors p-1"
-              href="https://github.com/zaidrakhange/microworks"
+              href="https://github.com/icancodefyi/microworks"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
