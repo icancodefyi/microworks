@@ -5,6 +5,8 @@ export const FEE_BPS = 200n; // 2% protocol fee
 
 export const EXPLORER = "https://testnet.monadexplorer.com";
 
+export const TEAM_WALLET = "0x225BAa4D33dD7c5b745085095Aa758bb6A958474" as `0x${string}`;
+
 export const CATEGORIES = [
   "label",
   "poll",

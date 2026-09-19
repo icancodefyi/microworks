@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { MicroworksLogo } from "@/components/brand/microworks-logo";
 import { FOOTER_SECTIONS } from "./microworks-data";
+import { EXPLORER, TEAM_WALLET } from "@/lib/constants";
 
 export function MicroworksFooter() {
   return (
@@ -18,6 +19,14 @@ export function MicroworksFooter() {
             <p className="text-xs text-stone-500 font-sans leading-relaxed">
               On-chain micro-task marketplace built on Monad. Post a task, verify with a golden key, earn instantly.
             </p>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`${EXPLORER}/address/${TEAM_WALLET}`}
+              className="text-xs font-mono text-stone-400 hover:text-stone-900 transition-colors"
+            >
+              built by 0x225B...8474
+            </a>
           </div>
 
           {/* Dynamic Link Columns */}
