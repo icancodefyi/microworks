@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Header from "@/components/Header";
 import PlayerHQ from "@/components/PlayerHQ";
 import TaskList from "@/components/TaskList";
@@ -77,6 +78,13 @@ export default function AppPage() {
                   <IconSparkles size={15} />
                   <span>Deploy Micro-Task</span>
                 </button>
+
+                <Link
+                  href="/demo"
+                  className="btn-arcade-blue inline-flex items-center justify-center gap-1.5 rounded-2xl px-4 py-3 text-xs font-black uppercase text-white"
+                >
+                  <span>▶ Watch Demo</span>
+                </Link>
 
                 <a
                   href={`${EXPLORER}/address/${CONTRACT_ADDRESS}`}

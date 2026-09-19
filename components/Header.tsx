@@ -61,6 +61,13 @@ export default function Header() {
             <IconArrowLeft size={13} />
             <span>Landing</span>
           </Link>
+
+          <Link
+            href="/demo"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[#2977ff]/30 bg-[#2977ff]/10 px-2.5 py-1 text-xs font-mono font-bold text-[#2977ff] hover:bg-[#2977ff]/20 transition shadow-2xs"
+          >
+            <span>▶ 28s Demo</span>
+          </Link>
         </div>
 
         {/* Center: Live Arcade HUD Pills (XP & Streak) */}
